@@ -133,13 +133,22 @@ For 3-D cut-planes, assume the function can handle planar inputs where two of th
 
 
 ```python
-k = Kamodo(rho='sin(5*x_ij)*cos(7*y_ij)*z') # we use ij notation to illustrate that x and y are 2d shaped arrays
+k = Kamodo(rho='sin(5*x)*cos(7*y)*z')
 k
 ```
 
 ```python
-x_ij, y_ij, z = cartesian.XY(z=1)
-k.plot(rho=plot_dict(k.rho, (x_ij, y_ij, z)))
+k.plot(rho=plot_dict(k.rho, cartesian.XY(z=2)))
+```
+
+```python
+k.plot(rho=plot_dict(k.rho, cartesian.YZ(x=1)))
+```
+
+We can also use the more generic `planar` function.
+
+```python
+k.plot(rho=plot_dict(k.rho, cartesian.planar('yz', x=1, ny=111, yspace='log')))
 ```
 
 ## Gridify
@@ -147,6 +156,7 @@ k.plot(rho=plot_dict(k.rho, (x_ij, y_ij, z)))
 When we are given a function of vector-valued positions (provided by some external resource), we can convert such functions into "gridified" form for plotting.
 
 ```python
+from kamodo import kamodofy
 @kamodofy
 def rho(rvec):
     # r*cos(2y)*sin(5x) for (x,y) = rvec and r = |rvec|
@@ -177,7 +187,7 @@ k.plot('rho_grid')
 ```
 
 ```python
-plot_types
+
 ```
 
 ```python

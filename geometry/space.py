@@ -9,6 +9,9 @@ def optional(d):
         return next(iter(d.values()))
     return d
 
+def optionals(*args):
+    return [optional(_) for _ in args]
+
 def one_dimensional(x_1, x_2, n, space, base):
     if space == 'linear':
         return np.linspace(x_1, x_2, n)
@@ -79,26 +82,39 @@ def xy(x_1=0., x_2=1., nx=51, xspace=dict(linear='linear', log='log'), xbase=10,
     z_ = optional(z)
     squeeze = optional(squeeze)
     if z_ is not None:
+        if squeeze:
+            x_, y_ = np.meshgrid(
+                one_dimensional(x_1, x_2, nx, optional(xspace), xbase),
+                one_dimensional(y_1, y_2, ny, optional(yspace), ybase),
+                indexing=optional(indexing))
+            return x_, y_, z_
         return np.meshgrid(
             one_dimensional(x_1, x_2, nx, optional(xspace), xbase),
             one_dimensional(y_1, y_2, ny, optional(yspace), ybase),
             z,
             indexing=optional(indexing))
-    else:
-        return np.meshgrid(
-            one_dimensional(x_1, x_2, nx, optional(xspace), xbase),
-            one_dimensional(y_1, y_2, ny, optional(yspace), ybase),
-            indexing=optional(indexing))
+    return np.meshgrid(
+        one_dimensional(x_1, x_2, nx, optional(xspace), xbase),
+        one_dimensional(y_1, y_2, ny, optional(yspace), ybase),
+        indexing=optional(indexing))
 
 
 @kamodofy(data={})
 def xz(x_1=0., x_2=1., nx=51, xspace=dict(linear='linear', log='log'), xbase=10,
        y={'None': None, '0': 0},
        z_1=0., z_2=1., nz=53, zspace=dict(linear='linear', log='log'), zbase=10,
-      indexing={'xz': 'xy', 'ij':'ij', 'tooltip': meshgrid_tooltip}):
+       squeeze={'True': True, 'False': False},
+       indexing={'xz': 'xy', 'ij':'ij', 'tooltip': meshgrid_tooltip}):
     "create an xz plane passing through y (optional)"
     y_ = optional(y)
+    squeeze = optional(squeeze)
     if y_ is not None:
+        if squeeze:
+            x_, z_ = np.meshgrid(
+                one_dimensional(x_1, x_2, nx, optional(xspace), xbase),
+                one_dimensional(z_1, z_2, nz, optional(zspace), zbase),
+                indexing=optional(indexing))
+            return x_, y_, z_
         return np.meshgrid(
             one_dimensional(x_1, x_2, nx, optional(xspace), xbase),
             y_,
@@ -113,10 +129,18 @@ def xz(x_1=0., x_2=1., nx=51, xspace=dict(linear='linear', log='log'), xbase=10,
 def yz(x={'None': None, '0': 0},
        y_1=0., y_2=1., ny=52, yspace=dict(linear='linear', log='log'), ybase=10,
        z_1=0., z_2=1., nz=53, zspace=dict(linear='linear', log='log'), zbase=10,
+       squeeze={'True': True, 'False': False},
       indexing={'yz': 'xy', 'ij':'ij', 'tooltip': meshgrid_tooltip}):
     """create a yz plane passing through x (optional)"""
     x_ = optional(x)
+    squeeze = optional(squeeze)
     if x_ is not None:
+        if squeeze:
+            y_, z_ = np.meshgrid(
+                one_dimensional(y_1, y_2, ny, optional(yspace), ybase),
+                one_dimensional(z_1, z_2, nz, optional(zspace), zbase),
+                indexing=optional(indexing))
+            return x_, y_, z_
         return np.meshgrid(
             x_,
             one_dimensional(y_1, y_2, ny, optional(yspace), ybase),
@@ -129,3 +153,53 @@ def yz(x={'None': None, '0': 0},
             indexing=optional(indexing))
 
 cartesian = Kamodo(X=x, Y=y, Z=z, XY=xy, XZ=xz, YZ=yz)
+
+
+# -
+
+# ### Cartesian plane
+#
+# A more generic form of cartesian plane would be to specify all of the above with defaults
+
+# +
+@kamodofy
+def planar(
+        plane=dict(xy='xy', xz='xz', yz='yz'),
+        x_1=0., x_2=1., nx=51, x=0,
+        xspace=dict(linear='linear', log='log'), xbase=10,
+        y_1=0., y_2=1., ny=52, y=0,
+        yspace=dict(linear='linear', log='log'), ybase=10,
+        z_1=0., z_2=1., nz=53, z=0,
+        zspace=dict(linear='linear', log='log'), zbase=10,
+        squeeze={'True': True, 'False': False},
+       indexing={'yz': 'xy', 'ij':'ij', 'tooltip': meshgrid_tooltip}):
+    """generic 3d cut plane"""
+    plane = optional(plane)
+    squeeze=optional(squeeze)
+    indexing = optional(indexing)
+    xspace, yspace, zspace = optionals(xspace, yspace, zspace)
+    x_ = one_dimensional(x_1, x_2, nx, xspace, xbase)
+    y_ = one_dimensional(y_1, y_2, ny, yspace, ybase)
+    z_ = one_dimensional(z_1, z_2, nz, zspace, zbase)
+    if plane == 'xy':
+        if squeeze:
+            xx, yy = np.meshgrid(x_, y_, indexing=indexing)
+            return xx, yy, z
+        return np.meshgrid(x_, y_, z, indexing=indexing)
+    elif plane == 'xz':
+        if squeeze:
+            xx, zz = np.meshgrid(x_, z_, indexing=indexing)
+            return xx, y, zz
+        return np.meshgrid(x_, y, z_, indexing=indexing)
+    elif plane == 'yz':
+        if squeeze:
+            yy, zz = np.meshgrid(y_, z_, indexing=indexing)
+            return x, yy, zz
+        return np.meshgrid(x, y_, z_, indexing=indexing)
+    else:
+        raise NotImplementedError('plane {} not supported'.format(plane_type))
+
+cartesian['planar'] = planar
+# -
+
+cartesian
