@@ -80,6 +80,8 @@ except NotImplementedError as m:
 
 ## Plotting
 
+### 1d functions
+
 ```python
 k = Kamodo(f='x**2-x-1')
 ```
@@ -91,3 +93,93 @@ k.plot(f=dict(x=cartesian.X(n=10, space='log')))
 ```
 
 This means the user can plot f in different spaces without registering a new function for `f` with alternate defaults each time.
+
+```python
+k.plot(f=dict(x=cartesian.X(x_1=-1, x_2 = 2, n=100, space='linear')))
+```
+
+## 2-d Functions
+
+
+For 2-d functions, we need geometries that create surfaces. The simplest of these are the `X-Y`, `X-Z` and `Y-Z` planar cartesian cuts.
+
+```python
+xx, yy = cartesian.XY()
+print(xx.shape, yy.shape)
+```
+
+The parameters are similar to the 1-d functions above, except for the `indexing` parameter, which includes a tooltip to be shown to the end user:
+
+```python
+get_defaults(cartesian.XY)
+```
+
+The `plot_dict` function may be used to map function arguments to parameters. This is useful for getting the keyword arguments necessary to connect a function's parameters to the output of a gridding function (so we can pass the result to `k.plot`).
+
+```python
+from geometry.space import plot_dict
+
+plot_dict(lambda alpha_, beta_: a*b, cartesian.XY())
+```
+
+```python
+k = Kamodo(rho='alpha_**2 + beta_**2')
+k.plot(rho=plot_dict(k.rho, cartesian.XY(yspace='log', xspace='log')))
+```
+
+## 3-dimensional cuts
+
+For 3-D cut-planes, assume the function can handle planar inputs where two of the variables have the same shape:
+
+
+```python
+k = Kamodo(rho='sin(5*x_ij)*cos(7*y_ij)*z') # we use ij notation to illustrate that x and y are 2d shaped arrays
+k
+```
+
+```python
+x_ij, y_ij, z = cartesian.XY(z=1)
+k.plot(rho=plot_dict(k.rho, (x_ij, y_ij, z)))
+```
+
+## Gridify
+
+When we are given a function of vector-valued positions (provided by some external resource), we can convert such functions into "gridified" form for plotting.
+
+```python
+@kamodofy
+def rho(rvec):
+    # r*cos(2y)*sin(5x) for (x,y) = rvec and r = |rvec|
+    return np.cos(2*rvec[:,1])*np.sin(5*rvec[:,0])*np.linalg.norm(rvec, axis=1)
+
+k['rho'] = rho
+
+k.rho 
+```
+
+```python
+# rho takes Nx3 positions as input and returns shape (N,) as output
+k.rho(cartesian.X(n=7*3).reshape(7,3)).shape
+```
+
+Register a new function that converts rho(rvec) to rho(x,y,z) using the `gridify` decorator.
+
+```python
+from kamodo import gridify
+
+k['rho_grid'] = gridify(k.rho, # function to be converted
+                        x=cartesian.X(), # parameterization to use
+                        y=cartesian.Y(space='log'), # can mix with log
+                        z=0, # intercept
+                        squeeze=False, # keep the 3rd dimension of the output
+                       )
+k.plot('rho_grid')
+```
+
+```python
+plot_types
+```
+
+```python
+
+```
