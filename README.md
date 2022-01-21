@@ -186,10 +186,40 @@ k['rho_grid'] = gridify(k.rho, # function to be converted
 k.plot('rho_grid')
 ```
 
-```python
+## Parametric surfaces
 
+A more general form of a surface is defined by `u-v` parameterization, where each of the `x,y,z` coordinates is itself a function of two variables `u,v`. This is useful for defining a spherical surface.
+
+```python
+k = Kamodo(x_ij=lambda u, v: np.sin(np.pi*v),
+           y_ij=lambda u, v: np.cos(np.pi*u),
+           z_ij=lambda u, v: u*v)
+
+k['vec_3'] = lambda x,y,z: (x,y,z)
+k['surface'] = 'vec_3(x_ij,y_ij,z_ij)'
+k['rho'] = 'sin(3*x)*cos(5*y)*sin(7*z)'
+k
 ```
 
 ```python
+u, v = np.meshgrid(np.linspace(0,1,111),
+                   np.linspace(0,1,113))
+k.plot(rho=plot_dict(k.rho, k.surface(u,v)))
+```
 
+### Spherical Shell
+
+
+Various slices may be made using `cartesian.shell` which represents spherical cross sections.
+
+```python
+cartesian.shell
+```
+
+```python
+k.plot(rho=plot_dict(k.rho, cartesian.shell(theta_min=np.pi/8, theta_max=7*np.pi/8)))
+```
+
+```python
+k.plot(rho=plot_dict(k.rho, cartesian.shell('r-theta', theta_max=1.99*np.pi, r_max = 2, phi=np.pi/4)))
 ```

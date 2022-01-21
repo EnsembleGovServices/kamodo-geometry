@@ -172,7 +172,7 @@ def planar(
         z_1=0., z_2=1., nz=53, z=0,
         zspace=dict(linear='linear', log='log'), zbase=10,
         squeeze={'True': True, 'False': False},
-       indexing={'yz': 'xy', 'ij':'ij', 'tooltip': meshgrid_tooltip}):
+        indexing={'yz': 'xy', 'ij':'ij', 'tooltip': meshgrid_tooltip}):
     """generic 3d cut plane"""
     plane = optional(plane)
     squeeze=optional(squeeze)
@@ -202,4 +202,57 @@ def planar(
 cartesian['planar'] = planar
 # -
 
-cartesian
+spherical = Kamodo()
+spherical['x(r,theta,phi)'] = 'r*sin(theta)*cos(phi)'
+spherical['y(r,theta,phi)'] = 'r*sin(theta)*sin(phi)'
+spherical['z(r,theta)'] = 'r*cos(theta)'
+
+@kamodofy(hidden_args = ['r_min', 'r_max', 'rspace', 'rbase', 'nr',
+                         'theta_min', 'theta_max', 'ntheta',
+                         'phi_min', 'phi_max', 'nphi',
+                         'squeeze', 'indexing','shell',
+                        ])
+def shell(
+        shell={'theta-phi':'theta-phi', 'r-theta':'r-theta', 'r-phi':'r-phi'},
+        r_min=1., r_max=10., nr=51, r=1.0,
+        rspace=dict(linear='linear', log='log'),
+        rbase={'10': 10, '2': 2, 'e': np.e},
+        theta_min=0., theta_max=np.pi, ntheta=52, theta=0,
+        phi_min=0., phi_max=2*np.pi, nphi=53, phi=0,
+        squeeze={'True': True, 'False': False},
+        indexing={'rtheta': 'xy', 'ij':'ij', 'tooltip': meshgrid_tooltip}):
+    shell = optional(shell)
+    squeeze=optional(squeeze)
+    indexing = optional(indexing)
+    rbase = optional(rbase)
+    rspace = optional(rspace)
+    r_ = one_dimensional(r_min, r_max, nr, rspace, rbase)
+    theta_ = one_dimensional(theta_min, theta_max, ntheta, 'linear', 1)
+    phi_ = one_dimensional(phi_min, phi_max, nphi, 'linear', 1)
+    if shell == 'r-theta':
+        if squeeze:
+            pphi = phi
+            rr, ttheta = np.meshgrid(r_, theta_, indexing=indexing)
+        else:
+            rr, ttheta, pphi = np.meshgrid(r_, theta_, phi, indexing=indexing)
+    elif shell == 'r-phi':
+        if squeeze:
+            ttheta = theta
+            rr, pphi = np.meshgrid(r_, phi_, indexing=indexing)
+        else:
+            rr, ttheta, pphi = np.meshgrid(r_, theta, phi_, indexing=indexing)
+    elif shell == 'theta-phi':
+        if squeeze:
+            rr = r
+            ttheta, pphi = np.meshgrid(theta_, phi_, indexing=indexing)
+        else:
+            rr, ttheta, pphi = np.meshgrid(r, theta_, phi_, indexing=indexing)
+    else:
+        raise NotImplementedError('plane {} not supported'.format(plane_type))
+    x = rr*np.sin(ttheta)*np.cos(pphi)
+    y = rr*np.sin(pphi)*np.sin(ttheta)
+    z = rr*np.cos(ttheta)
+    return x, y, z
+
+cartesian['shell'] = shell
+
