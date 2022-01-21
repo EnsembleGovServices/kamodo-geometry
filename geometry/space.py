@@ -214,7 +214,7 @@ spherical['z(r,theta)'] = 'r*cos(theta)'
                         ])
 def shell(
         shell={'theta-phi':'theta-phi', 'r-theta':'r-theta', 'r-phi':'r-phi'},
-        r_min=1., r_max=10., nr=51, r=1.0,
+        r_min=0., r_max=2., nr=51, r=1.0,
         rspace=dict(linear='linear', log='log'),
         rbase={'10': 10, '2': 2, 'e': np.e},
         theta_min=0., theta_max=np.pi, ntheta=52, theta=0,

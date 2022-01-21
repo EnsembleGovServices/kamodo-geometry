@@ -216,10 +216,20 @@ Various slices may be made using `cartesian.shell` which represents spherical cr
 cartesian.shell
 ```
 
+By default, the cartesian shell is at fixed `r=1`
+
 ```python
-k.plot(rho=plot_dict(k.rho, cartesian.shell(theta_min=np.pi/8, theta_max=7*np.pi/8)))
+k.plot(rho=plot_dict(k.rho, cartesian.shell()))
 ```
 
 ```python
-k.plot(rho=plot_dict(k.rho, cartesian.shell('r-theta', theta_max=1.99*np.pi, r_max = 2, phi=np.pi/4)))
+k.plot(rho=plot_dict(k.rho, cartesian.shell(
+    'r-theta',
+    rspace='linear',
+    theta_min=np.pi/8,
+    theta_max=7*np.pi/8)))
+```
+
+```python
+k.plot(rho=plot_dict(k.rho, cartesian.shell('r-phi', r_max = 2, theta=2*np.pi/3)))
 ```
