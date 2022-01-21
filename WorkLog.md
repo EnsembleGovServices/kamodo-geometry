@@ -1,3 +1,6 @@
+
+# 2022-01-21 12:01:08.418070: clock-in
+
 # 2022-01-20 17:28:45.955482: clock-out
 
 * added planar function
