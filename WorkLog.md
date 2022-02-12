@@ -1,3 +1,4 @@
+* registering lambdas to avoid issue with order override
 
 # 2022-02-11 18:31:46.600809: clock-in: T-10m 
 
