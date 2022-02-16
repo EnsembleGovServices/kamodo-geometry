@@ -1,3 +1,6 @@
+
+# 2022-02-16 12:44:15.876830: clock-in
+
 # 2022-02-11 18:34:50.206771: clock-out
 
 * registering lambdas to avoid issue with order override
