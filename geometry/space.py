@@ -200,15 +200,9 @@ def planar(
         raise NotImplementedError('plane {} not supported'.format(plane_type))
 
 cartesian['planar'] = planar
+
+
 # -
-
-spherical = Kamodo()
-spherical['x'] = lambda r, theta, phi: r*np.sin(theta)*np.cos(phi)
-spherical['y'] = lambda r, theta, phi: r*np.sin(theta)*np.sin(phi)
-spherical['z'] = lambda r, theta: r*np.cos(theta)
-
-spherical
-
 
 @kamodofy(hidden_args = ['r_min', 'r_max', 'rspace', 'rbase', 'nr',
                          'theta_min', 'theta_max', 'ntheta',
