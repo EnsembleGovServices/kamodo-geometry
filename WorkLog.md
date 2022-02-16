@@ -1,3 +1,13 @@
+# 2022-02-16 12:54:19.927791: clock-out
+
+* Need to separate coordinate conversions into their own objects:
+spherical - conversions from spherical into geo, cart:
+* `x = r*sin(theta)*cos(phi)`
+* `alt = r-6371*1000`
+cartesian - conversions from cartesian to geo, sph 
+geo - conversions from geo to sph, cart
+
+This allows us to keep the registered names as simple as possible
 
 # 2022-02-16 12:44:15.876830: clock-in
 
