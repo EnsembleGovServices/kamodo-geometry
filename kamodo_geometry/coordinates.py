@@ -40,6 +40,7 @@ def lat_sph(theta):
 spherical['lon'] = lon_sph
 spherical['lat'] = lat_sph
 spherical['alt(r[km])[km]'] = 'r-6371'
+spherical['rvec'] = lambda r, theta, phi: np.vstack((np.array(r),np.array(theta),np.array(phi))).T
 spherical
 
 
@@ -88,6 +89,8 @@ def alt_cart(x, y, z):
     return r - 6371
 
 cartesian['alt'] = alt_cart
+cartesian['xvec'] = lambda x, y, z: np.vstack((np.array(x),np.array(y),np.array(z))).T
+
 cartesian
 
 
@@ -127,6 +130,8 @@ geographic['phi'] = phi_geo
 geographic['x'] = 'r*sin(theta)*cos(phi)'
 geographic['y'] = 'r*sin(theta)*sin(phi)'
 geographic['z'] = 'r*cos(theta)'
+geographic['hvec'] = lambda lon, lat, alt: np.vstack((np.array(lon),np.array(lat),np.array(alt))).T
+
 geographic
 
 
