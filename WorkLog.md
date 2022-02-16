@@ -1,3 +1,6 @@
+
+# 2022-02-16 13:55:42.766552: clock-in
+
 # 2022-02-16 12:54:19.927791: clock-out
 
 * Need to separate coordinate conversions into their own objects:
