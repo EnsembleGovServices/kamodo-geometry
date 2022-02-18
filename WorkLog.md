@@ -1,3 +1,4 @@
+* convert to classes, test 2d arrays
 
 # 2022-02-18 16:16:57.686073: clock-in
 
