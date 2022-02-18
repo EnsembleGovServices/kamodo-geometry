@@ -1,6 +1,14 @@
 from kamodo import Kamodo, kamodofy
 import numpy as np
 
+
+def to_tuple(vec):
+    """convert numpy vector into tuple shape"""
+    if hasattr(vec, 'shape'):
+        return vec.T
+    return vec
+
+
 # # Spherical
 #
 # Conversions from spherical into geo, cartesian
@@ -45,7 +53,7 @@ spherical['rvec'] = lambda r, theta, phi: np.array((r, theta, phi)).T
 @kamodofy
 def xvec_sph(rvec):
     """convert from (r,theta,phi) to (x,y,z)"""
-    r, theta, phi = rvec
+    r, theta, phi = to_tuple(rvec)
     x = spherical.x(r, theta, phi)
     y = spherical.y(r,theta, phi)
     z = spherical.z(r, theta)
@@ -55,8 +63,8 @@ spherical['xvec'] = xvec_sph
 
 @kamodofy
 def hvec_sph(rvec):
-    """convert from (r[km], theta[rad], phi[rad]) to (lat[deg], lon[deg], alt[km])"""
-    r, theta, phi = rvec
+    """convert from (r[m], theta[rad], phi[rad]) to (lon[deg], lat[deg], alt[m])"""
+    r, theta, phi = to_tuple(rvec)
     lat = spherical.lat(theta)
     lon = spherical.lon(phi)
     alt = spherical.alt(r)
@@ -81,64 +89,79 @@ test_spherical()
 
 spherical
 
+
 # ## Cartesian
 #
 # From cartesian to spherical, geo
 
 # +
-cartesian = Kamodo()
+class Cartesian(Kamodo):
+    def __init__(self, longitude_modulus = 360, **kwargs):
+        
+        self.longitude_modulus = longitude_modulus
+        
+        super(Cartesian, self).__init__(**kwargs)
+        
+        self.register_spherical()
+        self.register_geographic()
+        
+        self['xvec'] = lambda x, y, z: np.array((x, y, z)).T
+        
+    def register_spherical(self):
+        self['r'] = 'sqrt(x_**2 + y_**2 + z_**2)'
+        self['theta'] = 'acos(z_/r)'
+        self['phi'] = 'atan2(y_, x_)'
+        
+        @kamodofy
+        def rvec_cart(xvec):
+            """convert from x,y,z to r, theta, phi"""
+            x, y, z = to_tuple(xvec)
+            r = cartesian.r(x,y,z)
+            theta = cartesian.theta(x,y,z)
+            phi = cartesian.phi(x,y)
+            return np.array((r, theta, phi)).T
+        
+        self['rvec'] = rvec_cart
+    
+    def register_geographic(self):
+        lon_equation = 'mod(180 atan2(y, x)/\pi, {})'.format(self.longitude_modulus)
+        @kamodofy(units='deg', equation=lon_equation)
+        def lon_cart(x, y):
+            phi = np.arctan2(y,x)
+            return (180*phi/np.pi)%self.longitude_modulus
 
-cartesian['r'] = 'sqrt(x_**2 + y_**2 + z_**2)'
-cartesian['theta'] = 'acos(z_/r)'
-cartesian['phi'] = 'atan2(y_, x_)'
-
-@kamodofy(units='deg', equation='180 atan2(y, x)/\pi')
-def lon_cart(x, y):
-    phi = np.arctan2(y,x)
-    return 180*phi/np.pi
-
-cartesian['lon'] = lon_cart
-
-@kamodofy(units='deg', arg_units=dict(theta='rad'),
+        self['lon'] = lon_cart
+        
+        @kamodofy(units='deg', arg_units=dict(theta='rad'),
           equation='90(1-2 acos(z/\sqrt{x^2+y^2+z^2}) /\pi)')
-def lat_cart(x, y, z):
-    """Gegraphic latitude"""
-    r = np.sqrt(x**2+y**2+z**2)
-    return 90*(1-2*(np.arccos(z/r))/np.pi)
+        def lat_cart(x, y, z):
+            """Gegraphic latitude"""
+            r = np.sqrt(x**2+y**2+z**2)
+            return 90*(1-2*(np.arccos(z/r))/np.pi)
 
-cartesian['lat'] = lat_cart
+        self['lat'] = lat_cart
 
-@kamodofy(units='m', arg_units=dict(x='m', y='m', z='m'),
-         equation='\sqrt{x^2+y^2+z^2} - 6371000')
-def alt_cart(x, y, z):
-    r = np.sqrt(x**2+y**2+z**2)
-    return r - 6371*1000
+        @kamodofy(units='m', arg_units=dict(x='m', y='m', z='m'),
+                 equation='\sqrt{x^2+y^2+z^2} - 6371000')
+        def alt_cart(x, y, z):
+            r = np.sqrt(x**2+y**2+z**2)
+            return r - 6371*1000
 
-cartesian['alt'] = alt_cart
-cartesian['xvec'] = lambda x, y, z: np.array((x, y, z)).T
+        self['alt'] = alt_cart
+        
+        @kamodofy(arg_units=dict(xvec='m'))
+        def hvec_cart(xvec):
+            """convert from (x,y,z) to (lon, lat, alt)"""
+            x, y, z = to_tuple(xvec)
+            alt = cartesian.alt(x,y,z)
+            lat = cartesian.lat(x,y,z)
+            lon = cartesian.lon(x,y)
+            return np.array((lon, lat, alt)).T
 
-@kamodofy
-def rvec_cart(xvec):
-    """convert from x,y,z to r, theta, phi"""
-    x, y, z = xvec
-    r = cartesian.r(x,y,z)
-    theta = cartesian.theta(x,y,z)
-    phi = cartesian.phi(x,y)
-    return np.array((r, theta, phi)).T
+        self['hvec'] = hvec_cart
+        
 
-cartesian['rvec'] = rvec_cart
-
-
-@kamodofy(arg_units=dict(xvec='m'))
-def hvec_cart(xvec):
-    """convert from (x,y,z) to (lat, lon, alt)"""
-    x, y, z = xvec
-    alt = cartesian.alt(x,y,z)
-    lat = cartesian.lat(x,y,z)
-    lon = cartesian.lon(x,y)
-    return np.array((lon, lat, alt)).T
-
-cartesian['hvec'] = hvec_cart
+cartesian = Cartesian()
 
 
 # +
@@ -187,7 +210,7 @@ geographic['hvec'] = lambda lon, lat, alt: np.array((lon, lat, alt)).T
 @kamodofy
 def xvec_geo(hvec):
     """convert from (lon[deg], lat[deg], alt[m]) to (x, y, z)"""
-    lon, lat, alt = hvec
+    lon, lat, alt = to_tuple(hvec)
     x = geographic.x(alt, lat, lon)
     y = geographic.y(alt, lat, lon)
     z = geographic.z(alt, lat)
@@ -198,7 +221,7 @@ geographic['xvec'] = xvec_geo
 @kamodofy
 def rvec_geo(hvec):
     """convert from (lon[deg], lat[deg], alt[m]) to (r, theta, phi)"""
-    lon, lat, alt = hvec
+    lon, lat, alt = to_tuple(hvec)
     r = geographic.r(alt)
     theta = geographic.theta(lat)
     phi = geographic.phi(lon)
