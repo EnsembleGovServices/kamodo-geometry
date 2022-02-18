@@ -1,3 +1,4 @@
+* reshaping vector components
 # 2022-02-16 18:52:00.097044: clock-out
 
 * supporting vector conversion
