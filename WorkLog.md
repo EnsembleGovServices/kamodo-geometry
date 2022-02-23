@@ -1,3 +1,4 @@
+* documenting units
 # 2022-02-18 16:55:27.831400: clock-out
 
 * convert to classes, test 2d arrays

@@ -180,7 +180,7 @@ class Cartesian(Kamodo):
         
         @kamodofy(arg_units=dict(xvec='m'))
         def hvec_cart(xvec):
-            """convert from (x,y,z) to (lon, lat, alt)"""
+            """convert from [x[m],y[m],z[m]] to [lon[deg], lat[deg], alt[m]]"""
             x, y, z = to_tuple(xvec)
             alt = self.alt(x,y,z)
             lat = self.lat(x,y,z)
@@ -295,3 +295,6 @@ def test_geographic():
         assert (_== hvec[:,:,i]).all()
 
 test_geographic()
+# -
+
+
