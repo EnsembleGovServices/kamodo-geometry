@@ -1,4 +1,6 @@
+* fixed shell and relative import
 * documenting units
+
 # 2022-02-18 16:55:27.831400: clock-out
 
 * convert to classes, test 2d arrays
@@ -12,6 +14,7 @@
 # 2022-02-17 18:53:52.698369: clock-in: T-30m 
 
 * reshaping vector components
+
 # 2022-02-16 18:52:00.097044: clock-out
 
 * supporting vector conversion
@@ -20,6 +23,7 @@
 
 * adding vectors
 * renaming for imports
+
 # 2022-02-16 15:31:13.068086: clock-out
 
 * added spherical, cartesian, geo coordinates

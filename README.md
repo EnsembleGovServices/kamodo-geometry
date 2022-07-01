@@ -17,12 +17,18 @@ This library contains a number of geometric functions that allow for much more f
 <!-- #endregion -->
 
 ```python
+# make sure you cd into the root of the kamodo-geometry repo
+import sys
+sys.path.append('.')
+```
+
+```python
 from kamodo import Kamodo
 import numpy as np
 ```
 
 ```python
-from geometry.space import cartesian
+from space import cartesian
 ```
 
 ```python
@@ -117,7 +123,7 @@ get_defaults(cartesian.XY)
 The `plot_dict` function may be used to map function arguments to parameters. This is useful for getting the keyword arguments necessary to connect a function's parameters to the output of a gridding function (so we can pass the result to `k.plot`).
 
 ```python
-from geometry.space import plot_dict
+from space import plot_dict
 
 plot_dict(lambda alpha_, beta_: a*b, cartesian.XY())
 ```
@@ -213,17 +219,21 @@ k.plot(rho=plot_dict(k.rho, k.surface(u,v)))
 Various slices may be made using `cartesian.shell` which represents spherical cross sections.
 
 ```python
-cartesian.shell
+from space import shell
+```
+
+```python
+help(shell)
 ```
 
 By default, the cartesian shell is at fixed `r=1`
 
 ```python
-k.plot(rho=plot_dict(k.rho, cartesian.shell()))
+k.plot(rho=plot_dict(k.rho, shell()))
 ```
 
 ```python
-k.plot(rho=plot_dict(k.rho, cartesian.shell(
+k.plot(rho=plot_dict(k.rho, shell(
     'r-theta',
     rspace='linear',
     theta_min=np.pi/8,
@@ -231,5 +241,9 @@ k.plot(rho=plot_dict(k.rho, cartesian.shell(
 ```
 
 ```python
-k.plot(rho=plot_dict(k.rho, cartesian.shell('r-phi', r_max = 2, theta=2*np.pi/3)))
+k.plot(rho=plot_dict(k.rho, shell('r-phi', r_max = 2, theta=2*np.pi/3)))
+```
+
+```python
+
 ```
