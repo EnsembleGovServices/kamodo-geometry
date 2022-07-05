@@ -127,11 +127,13 @@ test_spherical()
 class Cartesian(Kamodo):
     def __init__(self,
         longitude_modulus = 360,
+        phi_modulus = None,
         rvec_order = ['r', 'theta', 'phi'],
         hvec_order = ['lon', 'lat', 'alt'],
         **kwargs):
         
         self.longitude_modulus = longitude_modulus
+        self.phi_modulus = phi_modulus
         self._rvec_order = rvec_order
         self._hvec_order = hvec_order
 
@@ -145,7 +147,10 @@ class Cartesian(Kamodo):
     def register_spherical(self):
         self['r'] = 'sqrt(x_**2 + y_**2 + z_**2)'
         self['theta'] = 'acos(z_/r)'
-        self['phi'] = 'atan2(y_, x_)'
+        if self.phi_modulus is None:
+            self['phi'] = 'atan2(y_, x_)'
+        else:
+            self['phi'] = 'mod(atan2(y_, x_),{})'.format(self.phi_modulus)
         
         @kamodofy
         def rvec_cart(xvec):
