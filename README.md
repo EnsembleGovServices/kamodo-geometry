@@ -17,6 +17,10 @@ This library contains a number of geometric functions that allow for much more f
 <!-- #endregion -->
 
 ```python
+cd kamodo_geometry
+```
+
+```python
 # make sure you cd into the root of the kamodo-geometry repo
 import sys
 sys.path.append('.')
@@ -245,5 +249,21 @@ k.plot(rho=plot_dict(k.rho, shell('r-phi', r_max = 2, theta=2*np.pi/3)))
 ```
 
 ```python
+from coordinates import Cartesian
+```
 
+```python
+Cartesian?
+```
+
+```python
+cart = Cartesian(rvec_order=['r', 'theta', 'phi'])
+
+assert cart.rvec([1, 0, 0])[0] == 1
+```
+
+```python
+cart = Cartesian(rvec_order=['phi', 'theta', 'r'])
+
+assert cart.rvec([1, 0, 0])[2] == 1
 ```
