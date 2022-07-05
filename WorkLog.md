@@ -1,3 +1,4 @@
+* allow setting order of vectors
 * fixed shell and relative import
 * documenting units
 

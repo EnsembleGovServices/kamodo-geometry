@@ -125,10 +125,16 @@ test_spherical()
 # From cartesian to spherical, geo
 
 class Cartesian(Kamodo):
-    def __init__(self, longitude_modulus = 360, **kwargs):
+    def __init__(self,
+        longitude_modulus = 360,
+        rvec_order = ['r', 'theta', 'phi'],
+        hvec_order = ['lon', 'lat', 'alt'],
+        **kwargs):
         
         self.longitude_modulus = longitude_modulus
-        
+        self._rvec_order = rvec_order
+        self._hvec_order = hvec_order
+
         super(Cartesian, self).__init__(**kwargs)
         
         self.register_spherical()
@@ -148,7 +154,9 @@ class Cartesian(Kamodo):
             r = self.r(x,y,z)
             theta = self.theta(x,y,z)
             phi = self.phi(x,y)
-            return np.stack((r, theta, phi), axis=-1)
+            coord_dict = dict(r=r, theta=theta, phi=phi)
+            rvec = [coord_dict[_] for _ in self._rvec_order]
+            return np.stack(rvec, axis=-1)
         
         self['rvec'] = rvec_cart
     
@@ -185,7 +193,9 @@ class Cartesian(Kamodo):
             alt = self.alt(x,y,z)
             lat = self.lat(x,y,z)
             lon = self.lon(x,y)
-            return np.stack((lon, lat, alt), axis=-1)
+            coord_dict = dict(lon=lon, lat=lat, alt=alt)
+            hvec = [coord_dict[_] for _ in self._hvec_order]
+            return np.stack(hvec, axis=-1)
 
         self['hvec'] = hvec_cart
 
