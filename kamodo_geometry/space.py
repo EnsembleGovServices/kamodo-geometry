@@ -250,3 +250,53 @@ def shell(
     y = rr*np.sin(pphi)*np.sin(ttheta)
     z = rr*np.cos(ttheta)
     return x, y, z
+
+
+
+def shell_geo(
+        shell={'lat-lon':'lat-lon', 'h-lat':'h-lat', 'h-lon':'h-lon'},      
+        h_min=0., h_max=2., nh=51, h=1.0,                                   #dont know if defaults are right
+        hspace=dict(linear='linear', log='log'),                            
+        hbase={'10': 10, '2': 2, 'e': np.e},                                
+        lat_min=-90., lat_max=90., nlat=52, lat=0,                          #dont know if defaults are right
+        lon_min=0., lon_max=360., nlon=53, lon=0,                        #dont know if defaults are right
+        squeeze={'True': True, 'False': False},
+        indexing={'hlat': 'xy', 'ij':'ij', 'tooltip': meshgrid_tooltip}):
+    shell = optional(shell)
+    squeeze=optional(squeeze)
+    indexing = optional(indexing)
+    hbase = optional(hbase)
+    hspace = optional(hspace)
+    h_ = one_dimensional(h_min, h_max, nh, hspace, hbase)
+    lat_ = one_dimensional(lat_min, lat_max, nlat, 'linear', 1)
+    lon_ = one_dimensional(lon_min, lon_max, nlon, 'linear', 1)
+    if shell == 'h-lat':
+        if squeeze:
+            llon = lon
+            hh, llat = np.meshgrid(h_, lat_, indexing=indexing)
+        else:
+            hh, llat, llon = np.meshgrid(h_, lat_, lon, indexing=indexing)
+    elif shell == 'h-lon':
+        if squeeze:
+            llat = lat
+            hh, llon = np.meshgrid(h_, lon_, indexing=indexing)
+        else:
+            hh, llat, llon = np.meshgrid(h_, lat, lon_, indexing=indexing)
+    elif shell == 'lat-lon':
+        if squeeze:
+            hh = h
+            llat, llon = np.meshgrid(lat_, lon_, indexing=indexing)
+        else:
+            hh, llat, llot = np.meshgrid(h, lat_, lon_, indexing=indexing)
+    else:
+        raise NotImplementedError('plane {} not supported'.format(plane_type))
+    rr = hh + 6371*1000
+    ttheta = (1-(llat/90))*np.pi/2
+    pphi = llon*np.pi/180
+    x = rr*np.sin(ttheta)*np.cos(pphi) 
+    y = rr*np.sin(pphi)*np.sin(ttheta) 
+    z = rr*np.cos(ttheta) 
+    return x, y, z
+
+
+
