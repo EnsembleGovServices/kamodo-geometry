@@ -45,7 +45,6 @@ jobs:
     - name: Test with pytest
       run: |
         pytest --cov kamodo_geometry.coordinates --cov kamodo_geometry.space kamodo_geometry/coordinates.py kamodo_geometry/space.py
-          - name: "Upload coverage to Codecov"
     - name: "Upload coverage to Codecov"
       uses: codecov/codecov-action@v1
       with:
