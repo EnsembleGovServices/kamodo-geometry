@@ -14,7 +14,13 @@ This library contains a number of geometric functions that allow for much more f
 
 ## Install
 
-Clone this repo and pip install in editable mode
+You can install kamodo geometry directly from source:
+
+```sh
+pip install git+https://github.com/EnsembleGovServices/kamodo-geometry.git
+```
+
+Alternatively, clone this repo and pip install in editable mode
 
 ```sh
 git clone https://github.com/EnsembleGovServices/kamodo-geometry.git
