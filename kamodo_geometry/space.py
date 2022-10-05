@@ -197,7 +197,7 @@ def planar(
             return x, yy, zz
         return np.meshgrid(x, y_, z_, indexing=indexing)
     else:
-        raise NotImplementedError('plane {} not supported'.format(plane_type))
+        raise NotImplementedError('plane {} not supported'.format(plane))
 
 cartesian['planar'] = planar
 
@@ -245,7 +245,7 @@ def shell(
         else:
             rr, ttheta, pphi = np.meshgrid(r, theta_, phi_, indexing=indexing)
     else:
-        raise NotImplementedError('plane {} not supported'.format(plane_type))
+        raise NotImplementedError('plane {} not supported'.format(shell))
     x = rr*np.sin(ttheta)*np.cos(pphi)
     y = rr*np.sin(pphi)*np.sin(ttheta)
     z = rr*np.cos(ttheta)
@@ -289,7 +289,7 @@ def shell_geo(
         else:
             hh, llat, llot = np.meshgrid(h, lat_, lon_, indexing=indexing)
     else:
-        raise NotImplementedError('plane {} not supported'.format(plane_type))
+        raise NotImplementedError('plane {} not supported'.format(plane))
     rr = hh + 6371*1000
     ttheta = (1-(llat/90))*np.pi/2
     pphi = llon*np.pi/180
