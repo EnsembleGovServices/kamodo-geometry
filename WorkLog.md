@@ -1,3 +1,4 @@
+* badge
 * correct bug in action
 * fail gracefully
 * code coverage

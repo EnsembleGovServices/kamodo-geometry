@@ -2,6 +2,8 @@
 
 # Kamodo Geometry
 
+[![codecov](https://codecov.io/gh/EnsembleGovServices/kamodo-geometry/branch/master/graph/badge.svg)](https://codecov.io/gh/EnsembleGovServices/kamodo-geometry)
+
 Geometric functions for advanced function composition.
 
 ## Motivation
