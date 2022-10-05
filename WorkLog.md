@@ -1,3 +1,6 @@
+
+# 2022-10-05 16:02:51.512151: clock-in
+
 # 2022-10-05 14:55:08.872080: clock-out
 
 * moving to another directory
