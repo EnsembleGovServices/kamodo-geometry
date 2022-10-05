@@ -1,3 +1,4 @@
+* changed to shell
 * removing plane_type
 * pytest
 

@@ -289,7 +289,7 @@ def shell_geo(
         else:
             hh, llat, llot = np.meshgrid(h, lat_, lon_, indexing=indexing)
     else:
-        raise NotImplementedError('plane {} not supported'.format(plane))
+        raise NotImplementedError('plane {} not supported'.format(shell))
     rr = hh + 6371*1000
     ttheta = (1-(llat/90))*np.pi/2
     pphi = llon*np.pi/180
