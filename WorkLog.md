@@ -1,3 +1,5 @@
+# 2022-10-05 14:55:08.872080: clock-out
+
 * moving to another directory
 * install kamodo
 * changed to shell
