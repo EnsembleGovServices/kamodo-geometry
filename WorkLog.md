@@ -1,3 +1,4 @@
+* moving to another directory
 * install kamodo
 * changed to shell
 * removing plane_type
