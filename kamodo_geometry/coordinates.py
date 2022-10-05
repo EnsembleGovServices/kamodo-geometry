@@ -27,13 +27,13 @@ class Spherical(Kamodo):
         """register conversions from spherical to cartesian"""
         
         @kamodofy(#arg_units=dict(r='1', theta='rad', phi='rad'),
-                 equation='r sin(\\theta) cos(\phi)')
+                 equation='r sin(\\theta) cos(\\phi)')
         def x_sph(r, theta, phi):
             return r*np.sin(theta)*np.cos(phi)
         
         self['x'] = x_sph
         
-        @kamodofy(equation='r sin(\\theta) sin(\phi)')
+        @kamodofy(equation='r sin(\\theta) sin(\\phi)')
         def y_sph(r, theta, phi):
             return r*np.sin(theta)*np.sin(phi)
         
@@ -60,7 +60,7 @@ class Spherical(Kamodo):
         """register conversions from spherical to geographic"""
     
         @kamodofy(units='deg', arg_units=dict(phi='rad'),
-                  equation='180 \\phi / \pi')
+                  equation='180 \\phi / \\pi')
         def lon_sph(phi):
             '''Geographic longitude'''
             return 180*phi/np.pi
@@ -68,7 +68,7 @@ class Spherical(Kamodo):
         self['lon'] = lon_sph
         
         @kamodofy(units='deg', arg_units=dict(theta='rad'),
-                  equation='90(1-2 \\theta /\pi)')
+                  equation='90(1-2 \\theta /\\pi)')
         def lat_sph(theta):
             """Gegraphic latitude"""
             return 90*(1-2*theta/np.pi)
@@ -114,8 +114,6 @@ def test_spherical():
     rvec = spherical.rvec(r, theta, phi)
     for i, _ in enumerate((r, theta, phi)):
         assert (_== rvec[:,:,i]).all()
-
-test_spherical()
 
 
 # -
@@ -166,7 +164,7 @@ class Cartesian(Kamodo):
         self['rvec'] = rvec_cart
     
     def register_geographic(self):
-        lon_equation = 'mod(180 atan2(y, x)/\pi, {})'.format(self.longitude_modulus)
+        lon_equation = 'mod(180 atan2(y, x)/\\pi, {})'.format(self.longitude_modulus)
         @kamodofy(units='deg', equation=lon_equation)
         def lon_cart(x, y):
             phi = np.arctan2(y,x)
@@ -175,7 +173,7 @@ class Cartesian(Kamodo):
         self['lon'] = lon_cart
         
         @kamodofy(units='deg', arg_units=dict(theta='rad'),
-          equation='90(1-2 acos(z/\sqrt{x^2+y^2+z^2}) /\pi)')
+          equation='90(1-2 acos(z/\\sqrt{x^2+y^2+z^2}) /\\pi)')
         def lat_cart(x, y, z):
             """Gegraphic latitude"""
             r = np.sqrt(x**2+y**2+z**2)
@@ -184,7 +182,7 @@ class Cartesian(Kamodo):
         self['lat'] = lat_cart
 
         @kamodofy(units='m', arg_units=dict(x='m', y='m', z='m'),
-                 equation='\sqrt{x^2+y^2+z^2} - 6371000')
+                 equation='\\sqrt{x^2+y^2+z^2} - 6371000')
         def alt_cart(x, y, z):
             r = np.sqrt(x**2+y**2+z**2)
             return r - 6371*1000
@@ -225,9 +223,6 @@ def test_cartesian():
     for i, _ in enumerate((x, y, z)):
         assert (_== xvec[:,:,i]).all()
     
-test_cartesian()
-# -
-
 # ## Geographic
 # Convert from geographic (lon, lat, alt) to Cartesian, spherical
 
@@ -246,14 +241,14 @@ class Geographic(Kamodo):
         self['r(alt[m])[m]'] = 'alt+6371*1000'
 
         @kamodofy(units='rad', arg_units=dict(lat='deg'),
-                 equation='(1-(lat/90))\pi/2')
+                 equation='(1-(lat/90))\\pi/2')
         def theta_geo(lat):
             return (1-(lat/90))*np.pi/2
 
         self['theta'] = theta_geo
 
         @kamodofy(units='rad', arg_units=dict(lon='deg'),
-                 equation='\pi lon/180')
+                 equation='\\pi lon/180')
         def phi_geo(lon):
             return lon*np.pi/180
 
@@ -309,7 +304,5 @@ def test_geographic():
     for i, _ in enumerate((lon, lat, alt)):
         assert (_== hvec[:,:,i]).all()
 
-test_geographic()
-# -
 
 
