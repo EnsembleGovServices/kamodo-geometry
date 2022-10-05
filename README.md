@@ -12,21 +12,22 @@ However, function authors may not be aware of the full context that their functi
 
 This library contains a number of geometric functions that allow for much more flexibility in defining where functions should be evaluated. Each function contains many options not known to kamodo's plotting signatures, but which may be provisioned at run time.
 
+## Install
+
+Clone this repo and pip install in editable mode
+
+```sh
+git clone https://github.com/EnsembleGovServices/kamodo-geometry.git
+pip install -e kamodo-geometry
+```
+
+You should now be able to import the `kamodo_geometry` module
+
+```python
+import kamodo_geometry
+```
 
 ## Examples
-
-
-<!-- #endregion -->
-
-```python
-cd kamodo_geometry
-```
-
-```python
-# make sure you cd into the root of the kamodo-geometry repo
-import sys
-sys.path.append('.')
-```
 
 ```python
 from kamodo import Kamodo
@@ -34,7 +35,7 @@ import numpy as np
 ```
 
 ```python
-from space import cartesian
+from kamodo_geometry.space import cartesian
 ```
 
 ```python
@@ -129,7 +130,7 @@ get_defaults(cartesian.XY)
 The `plot_dict` function may be used to map function arguments to parameters. This is useful for getting the keyword arguments necessary to connect a function's parameters to the output of a gridding function (so we can pass the result to `k.plot`).
 
 ```python
-from space import plot_dict
+from kamodo_geometry.space import plot_dict
 
 plot_dict(lambda alpha_, beta_: a*b, cartesian.XY())
 ```
@@ -225,7 +226,7 @@ k.plot(rho=plot_dict(k.rho, k.surface(u,v)))
 Various slices may be made using `cartesian.shell` which represents spherical cross sections.
 
 ```python
-from space import shell
+from kamodo_geometry.space import shell
 ```
 
 ```python
@@ -251,7 +252,7 @@ k.plot(rho=plot_dict(k.rho, shell('r-phi', r_max = 2, theta=2*np.pi/3)))
 ```
 
 ```python
-from coordinates import Cartesian
+from kamodo_geometry.coordinates import Cartesian
 ```
 
 ```python
